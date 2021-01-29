@@ -5,6 +5,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +31,29 @@ public class UserController {
 	@Autowired
 	private CartRepository cartRepository;
 
+	private final BCryptPasswordEncoder passwordEncoder;
+
+	public UserController(UserRepository userRepository, CartRepository cartRepository, BCryptPasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.cartRepository = cartRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 	@GetMapping("/id/{id}")
-	public ResponseEntity<User> findById(@PathVariable Long id) {
-		return ResponseEntity.of(userRepository.findById(id));
+	public ResponseEntity<User> findById(@PathVariable Long id, Authentication authentication) {
+		Optional<User> user = null;
+		try {
+			authentication = SecurityContextHolder.getContext().getAuthentication();
+			if (userRepository.findByUsername(authentication.getName()) == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+			}
+			user = userRepository.findById(id);
+			if(userRepository.findByUsername(authentication.getName()) != null && user.get().getUsername() == null){
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
+		} catch (NullPointerException ne) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		return ResponseEntity.of(user);
 	}
 	
 	@GetMapping("/{username}")
@@ -46,8 +69,15 @@ public class UserController {
 		Cart cart = new Cart();
 		cartRepository.save(cart);
 		user.setCart(cart);
+		if (createUserRequest.getPassword().length() < 8) {
+			return ResponseEntity.badRequest().build();
+		} else if (!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
+			return ResponseEntity.badRequest().build();
+		}
+		user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 		userRepository.save(user);
 		return ResponseEntity.ok(user);
 	}
+
 	
 }
