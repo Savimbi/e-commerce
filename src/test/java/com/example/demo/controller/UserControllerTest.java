@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import ch.qos.logback.core.net.SMTPAppenderBase;
 import com.example.demo.controllers.UserController;
 import com.example.demo.model.persistence.User;
 import com.example.demo.model.persistence.repositories.CartRepository;
