@@ -35,7 +35,7 @@ public class OrderControllerTest {
     private User createNewUser() {
         User user = new User();
         user.setId(1L);
-        user.setUsername("rajaul");
+        user.setUsername("savio");
         user.setPassword("12345678");
 
         Cart cart = new Cart();
@@ -61,24 +61,24 @@ public class OrderControllerTest {
 
     @Test
     public void submitOrderValidation() {
-        when(userRepository.findByUsername("rajaul")).thenReturn(createNewUser());
+        when(userRepository.findByUsername("savio")).thenReturn(createNewUser());
 
-        final ResponseEntity<UserOrder> response = orderController.submit("rajaul");
+        final ResponseEntity<UserOrder> response = orderController.submit("savio");
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
 
         UserOrder orders = response.getBody();
         assertNotNull(orders);
-        assertEquals("rajaul", orders.getUser().getUsername());
+        assertEquals("savio", orders.getUser().getUsername());
     }
 
     @Test
     public void validateOrdersForUser() {
         User user = createNewUser();
-        when(userRepository.findByUsername("rajaul")).thenReturn(user);
+        when(userRepository.findByUsername("savio")).thenReturn(user);
         when(orderRepository.findByUser(user)).thenReturn(createOrdersByUser());
-        final ResponseEntity<List<UserOrder>> response = orderController.getOrdersForUser("rajaul");
+        final ResponseEntity<List<UserOrder>> response = orderController.getOrdersForUser("savio");
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());

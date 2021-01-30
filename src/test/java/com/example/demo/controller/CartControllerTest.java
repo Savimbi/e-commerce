@@ -38,7 +38,7 @@ public class CartControllerTest {
     private User createNewUser() {
         User user = new User();
         user.setId(1L);
-        user.setUsername("rajaul");
+        user.setUsername("savio");
         user.setPassword("12345678");
 
         Cart cart = new Cart();
@@ -74,30 +74,30 @@ public class CartControllerTest {
         ModifyCartRequest modifyCartRequest = new ModifyCartRequest();
         modifyCartRequest.setItemId(1L);
         modifyCartRequest.setQuantity(3);
-        modifyCartRequest.setUsername("rajaul");
+        modifyCartRequest.setUsername("savio");
 
         return modifyCartRequest;
     }
     @Test
     public void checkRemoveFromCart() {
-        when(userRepository.findByUsername("rajaul")).thenReturn(createNewUser());
+        when(userRepository.findByUsername("savio")).thenReturn(createNewUser());
         when(itemRepository.findById(1L)).thenReturn(Optional.of(createNewItem()));
         ResponseEntity<Cart> response = cartController.removeFromcart(createModifyCartRequest());
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
         Cart cart = response.getBody();
         assertNotNull(cart);
-        assertEquals("rajaul", cart.getUser().getUsername());
+        assertEquals("savio", cart.getUser().getUsername());
     }
     @Test
     public void checkAddToCart() {
-        when(userRepository.findByUsername("rajaul")).thenReturn(createNewUser());
+        when(userRepository.findByUsername("savio")).thenReturn(createNewUser());
         when(itemRepository.findById(1L)).thenReturn(Optional.of(createNewItem()));
         ResponseEntity<Cart> response = cartController.addTocart(createModifyCartRequest());
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
         Cart cart = response.getBody();
         assertNotNull(cart);
-        assertEquals("rajaul", cart.getUser().getUsername());
+        assertEquals("savio", cart.getUser().getUsername());
     }
 }
